@@ -1088,7 +1088,7 @@ function buildCardDoc(r){
     let s=0,n=0;
     r.beh.perRound.forEach(pr=>{ const v=pr.dims[dm.id];
       if(pr.filled&&v>=1){s+=v;n++;} });
-    row(dm.label,n?(s/n).toFixed(1)+' / 5':'-');
+    row(dm.label,n?(s/n).toFixed(1)+' / 4':'-');
   });
   y+=3;
   head('BPM Cabang - '+r.groupName);

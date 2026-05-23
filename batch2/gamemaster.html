@@ -610,10 +610,13 @@ function renderAmanah(){
 }
 function awardAmanah(gid,delta){
   if(S.locked){ showToast('Sesi terkunci · buka kunci untuk memberi Amanah'); return; }
+  const cap=AMAX['r'+S.round]||10;
+  const cur=(amanahData[gid]&&+amanahData[gid]['r'+S.round])||0;
+  if(delta>0 && cur>=cap){ showToast('Maksimal '+cap+' koin Amanah per ronde'); return; }
   dbRef('/amanah/'+gid+'/r'+S.round).transaction(
-    v=>Math.max(0,(v||0)+delta),
+    v=>Math.min(cap,Math.max(0,(v||0)+delta)),
     function(err,committed){
-      if(err){ showToast('Koin Amanah gagal tersimpan · publish ulang Firebase Rules','err'); }
+      if(err){ showToast('Koin Amanah gagal tersimpan · coba lagi','err'); }
       else if(!committed){ showToast('Koin Amanah tidak tersimpan','err'); }
     }
   );
