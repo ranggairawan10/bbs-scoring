@@ -720,6 +720,7 @@ dbRef('/session').on('value',snap=>{
   const lb=document.getElementById('lockBtn');
   if(lb) lb.textContent=S.locked?'Buka Kunci Sesi':'Kunci Sesi';
   renderRounds();
+  renderHistory();
   attachTier();
 });
 

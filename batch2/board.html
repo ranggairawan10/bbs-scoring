@@ -490,13 +490,7 @@ function card(d,rank){
 function render(tierSnap){
   const rows=FX.deriveAll(tierSnap)
     .sort((a,b)=>b.skorKelompok-a.skorKelompok);
-  const anyData=rows.some(r=>r.roundsDone>0);
   const g=document.getElementById('grid');
-  if(!anyData){
-    g.innerHTML='<div class="bd-empty">Belum ada penilaian ronde yang difinalisasi. '
-      +'Papan akan terisi otomatis saat Game Master memfinalisasi tier.</div>';
-    return;
-  }
   g.innerHTML=rows.map((d,i)=>card(d,i+1)).join('');
 }
 

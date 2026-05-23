@@ -526,9 +526,10 @@ function requireFB(){
     <div class="card">
       <h2>Arsitektur CPI &middot; Opsi A</h2>
       <div class="formula-note">
-        <b>CPI = (Indeks POST &times; 2 + Indeks SIM &times; 16) / 18</b><br>
-        POST diisi dari Post-Test L2 Bank Soal. SIM diturunkan dari L3 Simulasi
-        yaitu 30% BPM cabang ditambah 70% rata-rata Skor Perilaku 6D.
+        <b>CPI = (Indeks Post-Test &times; 2 + Indeks Simulasi &times; 16) / 18</b><br>
+        Bobot 2 dan 16 adalah jumlah jam pembelajaran tiap komponen, total 18 jam.
+        Indeks Post-Test diisi dari Post-Test L2 Bank Soal. Indeks Simulasi diturunkan
+        dari L3 Simulasi yaitu 30% BPM cabang ditambah 70% rata-rata Skor Perilaku 6D.
         Predikat A 90-100, B 80-89, C 70-79, D di bawah 70. Ambang lulus CPI &ge; 3,00.
         Pre-Test bersifat informatif untuk Learning Gain, tidak masuk CPI.
       </div>
@@ -990,7 +991,7 @@ document.getElementById('btnCancelImport').addEventListener('click',()=>{
 document.getElementById('btnCSV').addEventListener('click',()=>{
   const head=['No','Nama','Kelompok','No Anggota','Pre-Learning','Pre-Test',
     'Post-Test','Learning Gain','Skor Perilaku 6D','L3 Simulasi','Predikat L3',
-    'Indeks SIM','Indeks POST','CPI','Predikat CPI','Status'];
+    'Indeks Simulasi','Indeks Post-Test','CPI','Predikat CPI','Status'];
   const lines=[head];
   let no=1;
   GROUPS.forEach(g=>{ for(let p=1;p<=6;p++){
@@ -1015,13 +1016,21 @@ function exportPDF(r){
   if(!window.jspdf){ showToast('Pustaka PDF gagal dimuat','err'); return; }
   const jsPDF=window.jspdf.jsPDF;
   const d=new jsPDF({unit:'mm',format:'a4'});
-  const M=16; let y=18;
-  d.setFont('helvetica','bold'); d.setFontSize(13);
-  d.text('BSI NEXT BM SCHOOL 2026',M,y);
-  d.setFont('helvetica','normal'); d.setFontSize(9);
-  d.text('Branch Banking Simulation  -  Kartu Penilaian Individu',M,y+5);
-  d.setDrawColor(0,163,157); d.setLineWidth(.6); d.line(M,y+8,194,y+8);
-  y+=17;
+  const M=16; let y=14;
+  /* logo Danantara kiri, BSI kanan · ditarik dari topbar yang sudah tertanam */
+  const LH=8.4;
+  try{
+    const ld=document.querySelector('.logo-d'), lb=document.querySelector('.logo-bsi');
+    if(ld&&ld.src) d.addImage(ld.src,'PNG',M,y,LH*414/124,LH);
+    if(lb&&lb.src){ const bw=LH*394/124; d.addImage(lb.src,'PNG',194-bw,y,bw,LH); }
+  }catch(e){}
+  y+=LH+5;
+  d.setDrawColor(0,163,157); d.setLineWidth(.6); d.line(M,y,194,y);
+  y+=7;
+  d.setFont('helvetica','bold'); d.setFontSize(7.5); d.setTextColor(0,143,138);
+  d.text('BRANCH BANKING SIMULATION  ·  KARTU PENILAIAN INDIVIDU',M,y);
+  d.setTextColor(0);
+  y+=8;
   d.setFont('helvetica','bold'); d.setFontSize(15);
   d.text(String(r.name),M,y);
   d.setFont('helvetica','normal'); d.setFontSize(9.5);
@@ -1042,6 +1051,10 @@ function exportPDF(r){
     d.text(t.toUpperCase(),M+2,y); d.setTextColor(0); y+=8; };
 
   head('Komponen CPI');
+  d.setFont('helvetica','italic'); d.setFontSize(7.5); d.setTextColor(120);
+  d.text('Rumus  CPI = (Indeks Post-Test x 2 + Indeks Simulasi x 16) / 18      ambang lulus CPI 3,00',M,y);
+  d.setTextColor(0); d.setFont('helvetica','normal'); d.setFontSize(9);
+  y+=6;
   row('Post-Test L2',r.post!==null?r.post:'belum ada',
       r.post!==null?'Indeks '+r.idxPost:'');
   row('L3 Simulasi',r.l3.toFixed(1),'Indeks '+r.idxSim+' / Predikat '+r.predikatL3);

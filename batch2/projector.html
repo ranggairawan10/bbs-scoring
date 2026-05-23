@@ -438,13 +438,7 @@ function row(d,rank){
 
 function render(tierSnap){
   const rows=FX.deriveAll(tierSnap).sort((a,b)=>b.skorKelompok-a.skorKelompok);
-  const any=rows.some(r=>r.roundsDone>0);
   const b=document.getElementById('board');
-  if(!any){
-    b.className='pj-empty';
-    b.innerHTML='Papan peringkat akan tampil saat penilaian ronde pertama difinalisasi.';
-    return;
-  }
   b.className='pj-board';
   b.innerHTML=rows.map((d,i)=>row(d,i+1)).join('');
 }
