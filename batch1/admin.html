@@ -166,6 +166,24 @@ table.aud td.tier{text-align:left}
 .btn-danger{background:var(--bad);color:#fff}
 .btn-danger[disabled]{opacity:.4}
 
+
+/* -- Impor Daftar Peserta -- */
+.imp-sub{font-size:12.5px;color:var(--slate);line-height:1.55;margin-bottom:12px}
+.imp-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.file-wrap{position:relative;overflow:hidden;cursor:pointer}
+.file-wrap input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+.imp-status{margin-top:11px;font-size:12.5px;color:var(--slate)}
+.imp-tbl{margin-top:12px;border:1px solid var(--line);border-radius:var(--r-sm);
+  overflow:hidden;font-size:11.5px}
+.imp-tbl .ith,.imp-tbl .itr{display:grid;
+  grid-template-columns:34px 1.7fr 1.3fr 1.5fr 1fr;gap:0}
+.imp-tbl .ith{background:var(--teal-soft);font-weight:700;color:var(--teal-dk)}
+.imp-tbl .ith span,.imp-tbl .itr span{padding:6px 9px;border-bottom:1px solid var(--line)}
+.imp-tbl .itr:last-child span{border-bottom:none}
+.imp-tbl .itr span{color:var(--ink)}
+.imp-cab{margin-top:14px}
+.imp-cab h3{font-size:12.5px;color:var(--teal-dk);margin:0 0 5px;
+  font-weight:700;letter-spacing:.02em}
 </style>
 </head>
 <body class="">
@@ -427,6 +445,32 @@ function requireFB(){
   </section>
 
   <section class="ad-sec">
+    <div class="ad-card">
+      <h2>Impor Daftar Peserta</h2>
+      <p class="imp-sub">Unggah berkas CSV daftar peserta untuk ruang ini. Berkas
+        memakai tujuh kolom: No, Batch, Kelompok Cabang, Nama Peserta, NIK,
+        Jabatan Asal, Peran Simulasi. Hanya baris milik ruang ini yang diserap.
+        Nama yang masuk dipakai otomatis oleh halaman Coach dan Report, sehingga
+        fasilitator tidak perlu mengetik ulang nama peserta. Mengunggah berkas
+        baru menggantikan daftar peserta yang tersimpan.</p>
+      <div class="imp-row">
+        <button class="btn btn-ghost" id="impTplBtn"
+          style="padding:9px 16px;font-size:13px">Unduh Contoh Format CSV</button>
+        <span class="file-wrap btn" style="padding:9px 16px;font-size:13px">Pilih Berkas CSV
+          <input type="file" id="impFile" accept=".csv,text/csv"></span>
+      </div>
+      <div class="imp-status" id="impStatus">Belum ada berkas dipilih.</div>
+      <div id="impPreview"></div>
+      <div class="imp-row" id="impApplyRow" style="display:none;margin-top:13px">
+        <button class="btn" id="impApplyBtn"
+          style="padding:9px 18px;font-size:13px">Simpan ke Sistem</button>
+        <button class="btn btn-ghost" id="impCancelBtn"
+          style="padding:9px 16px;font-size:13px">Batal</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="ad-sec">
     <div class="ad-card danger">
       <h2>Reset Sesi</h2>
       <p>Menghapus seluruh data sesi, tier, penilaian coach, dan nilai Post-Test.
@@ -527,6 +571,201 @@ dbRef('/session').once('value',s=>{
   if(!s.exists()) dbRef('/session').set({currentRound:1,presenting:null,phase:'idle',locked:false});
 });
 bindConnState();
+
+/* ===== Impor Daftar Peserta ============================================ */
+(function(){
+  var CAB = MASTER.kelompok.map(function(g){ return g.id; });           // 5 id cabang
+  var CABNAMA = {}; MASTER.kelompok.forEach(function(g){ CABNAMA[g.id]=g.nama; });
+  var NSBATCH = (NS==='/batch1') ? '1' : '2';                            // label batch ruang ini
+  var STAGED = null;                                                     // {cabId:{p1:{...}}}
+
+  function norm(s){ return String(s==null?'':s).trim().toLowerCase()
+    .replace(/\s+/g,' '); }
+
+  /* cocokkan teks kolom cabang -> id cabang MASTER */
+  function cabId(raw){
+    var n = norm(raw).replace(/^kcp\s+/,'');
+    for(var i=0;i<CAB.length;i++){
+      if(n===norm(CABNAMA[CAB[i]]) || n===CAB[i].replace(/_/g,' ')) return CAB[i];
+    }
+    return null;
+  }
+
+  /* parser CSV sederhana, menghormati tanda kutip */
+  function parseCSV(text){
+    text = text.replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n');
+    var rows=[], row=[], cur='', q=false, i, c;
+    for(i=0;i<text.length;i++){
+      c=text[i];
+      if(q){
+        if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; }
+        else cur+=c;
+      }else{
+        if(c==='"') q=true;
+        else if(c===','){ row.push(cur); cur=''; }
+        else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+        else cur+=c;
+      }
+    }
+    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(x){return String(x).trim()!=='';}); });
+  }
+
+  /* peta kolom dari baris header */
+  function colMap(head){
+    var h=head.map(norm), idx={};
+    function find(){ for(var a=0;a<arguments.length;a++){
+      var k=h.indexOf(arguments[a]); if(k>=0) return k; } return -1; }
+    idx.batch  = find('batch');
+    idx.cabang = (function(){ for(var k=0;k<h.length;k++){
+      if(h[k].indexOf('kelompok')>=0||h[k].indexOf('cabang')>=0) return k; } return -1; })();
+    idx.nama   = (function(){ for(var k=0;k<h.length;k++){
+      if(h[k].indexOf('nama')>=0) return k; } return -1; })();
+    idx.nik    = find('nik');
+    idx.jabatan= (function(){ for(var k=0;k<h.length;k++){
+      if(h[k].indexOf('jabatan')>=0) return k; } return -1; })();
+    idx.peran  = (function(){ for(var k=0;k<h.length;k++){
+      if(h[k].indexOf('peran')>=0) return k; } return -1; })();
+    return idx;
+  }
+
+  /* baris ini milik ruang batch ini? kolom batch boleh kosong */
+  function batchCocok(val){
+    if(val==null||String(val).trim()==='') return true;          // tanpa kolom batch: terima
+    var n=norm(val).replace(/[^0-9]/g,'');
+    return n===NSBATCH;
+  }
+
+  var statusEl  = document.getElementById('impStatus');
+  var previewEl = document.getElementById('impPreview');
+  var applyRow  = document.getElementById('impApplyRow');
+
+  function setStatus(msg,err){
+    statusEl.textContent=msg;
+    statusEl.style.color = err ? 'var(--bad)' : 'var(--slate)';
+  }
+  function escH(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+  /* unduh contoh format CSV */
+  document.getElementById('impTplBtn').addEventListener('click',function(){
+    var rows=[['No','Batch','Kelompok Cabang','Nama Peserta','NIK',
+      'Jabatan Asal','Peran Simulasi']];
+    var no=1;
+    CAB.forEach(function(id){
+      for(var p=1;p<=6;p++){
+        rows.push([no++, 'Batch '+NSBATCH, 'KCP '+CABNAMA[id], '', '', '',
+          p===1?'Group Leader':'Branch Manager']);
+      }
+    });
+    var csv=rows.map(function(r){ return r.map(function(c){
+      var s=String(c); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+    }).join(','); }).join('\n');
+    var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='contoh-daftar-peserta-batch'+NSBATCH+'.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    showToast('Contoh format terunduh');
+  });
+
+  /* pilih berkas */
+  document.getElementById('impFile').addEventListener('change',function(e){
+    var f=e.target.files[0]; e.target.value='';
+    if(!f) return;
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      try{ olahCSV(ev.target.result); }
+      catch(err){ setStatus('Berkas gagal dibaca. Pastikan format CSV benar.',true);
+        previewEl.innerHTML=''; applyRow.style.display='none'; STAGED=null; }
+    };
+    rd.onerror=function(){ setStatus('Berkas gagal dibaca.',true); };
+    rd.readAsText(f,'UTF-8');
+  });
+
+  function olahCSV(text){
+    var rows=parseCSV(text);
+    if(rows.length<2){ setStatus('Berkas kosong atau tanpa baris data.',true);
+      previewEl.innerHTML=''; applyRow.style.display='none'; STAGED=null; return; }
+    var idx=colMap(rows[0]);
+    if(idx.cabang<0||idx.nama<0){
+      setStatus('Kolom Kelompok Cabang atau Nama Peserta tidak ditemukan di berkas.',true);
+      previewEl.innerHTML=''; applyRow.style.display='none'; STAGED=null; return;
+    }
+    var bucket={}; CAB.forEach(function(c){ bucket[c]=[]; });
+    var diabaikan=0, batchLain=0;
+    for(var i=1;i<rows.length;i++){
+      var r=rows[i];
+      if(idx.batch>=0 && !batchCocok(r[idx.batch])){ batchLain++; continue; }
+      var cid=cabId(r[idx.cabang]);
+      var nama=(r[idx.nama]||'').trim();
+      if(!cid || !nama){ diabaikan++; continue; }
+      if(bucket[cid].length>=6){ diabaikan++; continue; }
+      bucket[cid].push({
+        nama:nama,
+        nik:(idx.nik>=0?(r[idx.nik]||''):'').toString().trim(),
+        jabatan:(idx.jabatan>=0?(r[idx.jabatan]||''):'').toString().trim(),
+        peran:(idx.peran>=0?(r[idx.peran]||''):'').toString().trim()
+      });
+    }
+    var totalMasuk=0; CAB.forEach(function(c){ totalMasuk+=bucket[c].length; });
+    if(totalMasuk===0){
+      setStatus('Tidak ada baris peserta yang cocok untuk ruang Batch '+NSBATCH+'.',true);
+      previewEl.innerHTML=''; applyRow.style.display='none'; STAGED=null; return;
+    }
+    /* susun STAGED bentuk node Firebase */
+    STAGED={};
+    CAB.forEach(function(c){
+      if(bucket[c].length){
+        STAGED[c]={};
+        bucket[c].forEach(function(o,k){ STAGED[c]['p'+(k+1)]=o; });
+      }
+    });
+    /* pratinjau */
+    var html='';
+    CAB.forEach(function(c){
+      if(!bucket[c].length) return;
+      html+='<div class="imp-cab"><h3>KCP '+escH(CABNAMA[c])
+        +' &middot; '+bucket[c].length+' peserta</h3>'
+        +'<div class="imp-tbl"><div class="ith"><span>P</span><span>Nama</span>'
+        +'<span>NIK</span><span>Jabatan Asal</span><span>Peran</span></div>';
+      bucket[c].forEach(function(o,k){
+        html+='<div class="itr"><span>P'+(k+1)+'</span><span>'+escH(o.nama)
+          +'</span><span>'+escH(o.nik||'-')+'</span><span>'+escH(o.jabatan||'-')
+          +'</span><span>'+escH(o.peran||'-')+'</span></div>';
+      });
+      html+='</div></div>';
+    });
+    previewEl.innerHTML=html;
+    applyRow.style.display='flex';
+    var msg=totalMasuk+' peserta siap disimpan untuk Batch '+NSBATCH+'.';
+    if(batchLain) msg+=' '+batchLain+' baris batch lain dilewati.';
+    if(diabaikan) msg+=' '+diabaikan+' baris diabaikan karena data kurang lengkap.';
+    setStatus(msg,false);
+  }
+
+  /* batal */
+  document.getElementById('impCancelBtn').addEventListener('click',function(){
+    STAGED=null; previewEl.innerHTML=''; applyRow.style.display='none';
+    setStatus('Impor dibatalkan.',false);
+  });
+
+  /* simpan ke Firebase node /peserta */
+  document.getElementById('impApplyBtn').addEventListener('click',function(){
+    if(!STAGED){ return; }
+    var btn=this; btn.disabled=true;
+    dbRef('/peserta').set(STAGED).then(function(){
+      showToast('Daftar peserta tersimpan ke sistem');
+      setStatus('Daftar peserta berhasil disimpan. Halaman Coach dan Report '
+        +'kini memakai nama ini.',false);
+      previewEl.innerHTML=''; applyRow.style.display='none'; STAGED=null;
+    }).catch(function(){
+      showToast('Gagal menyimpan daftar peserta','err');
+      setStatus('Penyimpanan gagal. Periksa koneksi internet lalu coba lagi.',true);
+    }).then(function(){ btn.disabled=false; });
+  });
+})();
+
 })();
 </script>
 </body>

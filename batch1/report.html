@@ -608,6 +608,7 @@ const NRD=ROUNDS.length, BATCH_LABEL="Batch 1";
 if(!requireFB()){ bindConnState(); return; }
 
 let COACH={}, TIER={}, EXAM={}, AMANAH={}, DEFENSE={}, DERIVED={}, IMPORT=null, curIdx=0;
+let PESERTA={};
 const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const numOrNull=v=>{ if(v===''||v===null||v===undefined) return null;
   const n=+v; return isNaN(n)?null:n; };
@@ -885,7 +886,9 @@ document.getElementById('btnTemplate').addEventListener('click',()=>{
   let no=1;
   GROUPS.forEach(g=>{
     for(let p=1;p<=6;p++){
-      rows.push([no++,pName(g.id,p)||'',g.nama,p,'','','']);
+      var _pp=(PESERTA[g.id]&&PESERTA[g.id]['p'+p])||{};
+      var _nm=(pName(g.id,p)||_pp.nama||'');
+      rows.push([no++,_nm,g.nama,p,'','','']);
     }
   });
   const csv=rows.map(r=>r.map(c=>{
@@ -1173,6 +1176,7 @@ function refresh(){
 }
 dbRef('/coach').on('value',s=>{ COACH=s.val()||{}; refresh(); });
 dbRef('/tier').on('value',s=>{ TIER=s.val()||{}; refresh(); });
+dbRef('/peserta').on('value',s=>{ PESERTA=s.val()||{}; refresh(); });
 dbRef('/exam').on('value',s=>{ EXAM=s.val()||{}; refresh(); });
 dbRef('/amanah').on('value',s=>{ AMANAH=s.val()||{}; refresh(); });
 dbRef('/defense').on('value',s=>{ DEFENSE=s.val()||{}; refresh(); });

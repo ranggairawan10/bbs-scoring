@@ -455,7 +455,7 @@ function requireFB(){
     <div class="co-name-row">
       <div class="num-field" style="flex:1">
         <label>Nama Peserta <span id="slotTag" style="color:var(--slate)"></span></label>
-        <input id="pName" type="text" placeholder="Nama peserta (opsional)"
+        <input id="pName" type="text" placeholder="Nama peserta"
                style="font-family:var(--font-b);text-transform:none">
       </div>
       <div class="co-score">
@@ -503,9 +503,18 @@ const GNAME=GROUPS[ME.g-1].nama;
 let S={sessionRound:1};
 let R=1;                 // ronde yang sedang dinilai coach
 let P=1;                 // peserta aktif P1-P6
-let COACH={};            // snapshot /coach/{GID}  → {r1:{p1:{...}}, ...}
+let COACH={};            // snapshot /coach/{GID}
+let PESERTA={};          // snapshot /peserta/{GID} -> {p1:{nama,nik,jabatan,peran}, ...}
 let noteTimer=null;
 
+
+/* nama peserta slot p: utamakan yang sudah dinilai coach, lalu daftar /peserta */
+function namaPeserta(p){
+  const dn=(COACH['r'+R]&&COACH['r'+R]['p'+p]&&COACH['r'+R]['p'+p].name)||'';
+  if(dn) return dn;
+  const pp=PESERTA&&PESERTA['p'+p];
+  return pp&&pp.nama ? pp.nama : '';
+}
 /* ── helper ────────────────────────────────────────────────────────────── */
 function rec(){ return (COACH['r'+R]&&COACH['r'+R]['p'+P])||{}; }
 function isScored(r,p){
@@ -531,8 +540,7 @@ function renderRounds(){
 function renderTabs(){
   const el=document.getElementById('ptabs'); el.innerHTML='';
   for(let p=1;p<=6;p++){
-    const d=(COACH['r'+R]&&COACH['r'+R]['p'+p])||{};
-    const nm=d.name;
+    const nm=namaPeserta(p);
     const b=document.createElement('button');
     b.className='co-pt'+(p===P?' on':'');
     b.innerHTML='<span class="pn">P'+p+(isScored(R,p)?'<span class="dot"></span>':'')+'</span>'
@@ -546,7 +554,7 @@ function renderTabs(){
 function renderCard(){
   const d=rec();
   document.getElementById('slotTag').textContent='· Slot P'+P;
-  document.getElementById('pName').value=d.name||'';
+  document.getElementById('pName').value=d.name||namaPeserta(P)||'';
   document.getElementById('pNote').value=d.note||'';
 
   const dl=document.getElementById('dimList'); dl.innerHTML='';
@@ -620,6 +628,7 @@ dbRef('/session/currentRound').on('value',s=>{
   S.sessionRound=s.val()||1;
   renderRounds();
 });
+dbRef('/peserta/'+GID).on('value',snap=>{ PESERTA=snap.val()||{}; renderTabs(); renderCard(); });
 dbRef('/coach/').on('value',snap=>{
   // muat hanya cabang ini
   const all=snap.val()||{};
