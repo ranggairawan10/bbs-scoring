@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Visual Board · BSI BBS Scoring 2026</title>
+<title>Visual Board · Batch 1 · BSI BBS Scoring 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -59,6 +59,8 @@ button{font-family:var(--font-b);cursor:pointer;border:none}
 .fb-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--slate)}
 .fb-pill.on .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(30,158,106,.18)}
 .fb-pill.off .dot{background:var(--bad);box-shadow:0 0 0 3px rgba(178,59,71,.18)}
+.fb-pill.on .txt{display:none}
+.fb-pill.on{padding:7px;gap:0}
 
 /* zona CM Tracker · warna terkunci dari master */
 .zona{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;
@@ -144,26 +146,22 @@ button{font-family:var(--font-b);cursor:pointer;border:none}
 .bskor .sl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   color:var(--slate)}
 
-/* CM Tracker */
+/* CM Tracker v4 · sorotan Delta CM akumulasi, tanpa bilah rasio RBB */
 .cmt{margin-bottom:13px}
-.cmt-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;
-  color:var(--slate);margin-bottom:7px}
-.cmt-head b{color:var(--ink);font-family:var(--font-m);font-weight:600}
-.cmt-head .zona{margin-left:auto}
-.cmt-bar{position:relative;height:26px;border-radius:6px;overflow:hidden;display:flex;
-  border:1px solid var(--line)}
-.cmt-seg{height:100%}
-.cmt-seg.distress{background:rgba(140,47,57,.30)}
-.cmt-seg.recovery{background:rgba(154,140,122,.32)}
-.cmt-seg.target_spm{background:rgba(248,173,60,.40)}
-.cmt-seg.outperform{background:rgba(0,163,157,.34)}
-.cmt-seg .sg-lbl{font-size:8px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
-  color:rgba(14,27,26,.55);padding:3px 0 0 5px;display:block;white-space:nowrap}
-.cmt-mark{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--ink);
-  border-radius:2px;box-shadow:0 0 0 2px var(--card)}
-.cmt-mark::after{content:"";position:absolute;top:-4px;left:50%;transform:translateX(-50%);
-  border:5px solid transparent;border-top-color:var(--ink)}
-.cmt-rbb{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.35}
+.cmt4-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
+  margin-bottom:9px}
+.cmt4-hero .cmt4-l{font-size:9px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--slate);margin-bottom:3px}
+.cmt4-hero .cmt4-v{font-family:var(--font-m);font-weight:800;font-size:25px;line-height:1}
+.cmt4-hero .cmt4-v.pos{color:var(--teal-dk)}
+.cmt4-hero .cmt4-v.neg{color:var(--bad)}
+.cmt4-hero .cmt4-v.zero{color:var(--slate)}
+.cmt4-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  padding-top:9px;border-top:1px solid var(--line)}
+.cmt4-st{display:flex;flex-direction:column;gap:2px}
+.cmt4-st .sl{font-size:9px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--slate)}
+.cmt4-st .sv{font-family:var(--font-m);font-weight:600;font-size:13px;color:var(--ink)}
 
 /* 3 Hat */
 .hats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
@@ -201,137 +199,131 @@ button{font-family:var(--font-b);cursor:pointer;border:none}
 </style>
 </head>
 <body class="">
+<style>.batch-tag{position:fixed;left:14px;bottom:14px;z-index:91;padding:8px 15px;border-radius:999px;font-size:12.5px;font-weight:800;letter-spacing:.09em;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.20);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}.batch-tag.b1{background:#00A39D}.batch-tag.b2{background:#F8AD3C;color:#3a2a05}@media print{.batch-tag{display:none}}</style><div class="batch-tag b1">BATCH 1</div>
 <script>
-const MASTER = {"_meta":{"dokumen":"BSI Next BM School 2026 · Branch Banking Simulation · Master Reference","versi":"1.2","tanggal_kunci":"2026-05-23","status":"LOCKED","fungsi":"Sumber kebenaran tunggal yang dipakai bersama oleh Scoring System, Cetak Biru Papan, dan Kartu Skenario R1-R6. Semua artefak menarik angka dari file ini, tidak boleh ada angka baseline yang diketik ulang secara terpisah.","satuan_nominal":"Rupiah Juta (Rp Juta) kecuali dinyatakan lain","sumber_baseline":"Lima file Master P&L KCP (Borobudur, Prambanan, Diponegoro, Gajah Mada, Majapahit), sheet 01 Dashboard, 05 CM Calculator, 07 RBB Realisasi."},"model_zona":{"nama":"Model vs RBB","definisi":"Zona CM Tracker ditentukan dari rasio CM Tahunan berjalan dibagi RBB CM Tahunan cabang itu sendiri. Setiap cabang dinilai terhadap rencananya sendiri, adil lintas ukuran cabang.","rumus_rasio":"rasio = cm_tahunan_berjalan / rbb_cm_tahunan","cm_tahunan_berjalan":"cm_tahunan_baseline + total_cm_impact_6_ronde","sumber_kebenaran_zona":"Layar Scoring System. Papan fisik hanya penanda geser kasar.","tingkat":[{"id":"outperform","label":"Outperform","min_rasio":1.1,"max_rasio":null,"warna":"#00A39D","catatan":"Melampaui RBB secara nyata"},{"id":"target_spm","label":"Target SPM","min_rasio":0.95,"max_rasio":1.1,"warna":"#F8AD3C","catatan":"Berada di koridor rencana, on plan"},{"id":"recovery","label":"Recovery","min_rasio":0.75,"max_rasio":0.95,"warna":"#9A8C7A","catatan":"Di bawah RBB, perlu akselerasi"},{"id":"distress","label":"Distress","min_rasio":null,"max_rasio":0.75,"warna":"#8C2F39","catatan":"Jauh di bawah RBB, kondisi tertekan"}]},"branch_performance_meter":{"skala":{"min":-10,"max":10},"indikator":["contribution_margin","risk","people","customer_satisfaction"],"bobot_weighted":{"contribution_margin":0.4,"risk":0.25,"people":0.2,"customer_satisfaction":0.15},"tiga_hat":{"business_leader_hat":["contribution_margin"],"risk_leader_hat":["risk"],"people_leader_hat":["people","customer_satisfaction"]},"catatan":"BPM Aggregate Weighted = jumlah (skor indikator x bobot). Skala tiap indikator -10 sampai +10."},"amanah_points":{"satuan":"1 koin = 1 Amanah Point = +1 pada BPM Total","alokasi_maks_per_ronde":{"r1":10,"r2":10,"r3":10,"r4":10,"r5":10,"r6":10},"catatan":"Amanah Points menambah BPM Total yang tampil di Layar dan Board. Tidak masuk CPI maupun skor kelompok, yang tetap memakai BPM dasar skala -10 sampai +10."},"behavior_6d":{"deskripsi":"Enam dimensi perilaku yang diobservasi Branch Coach per peserta per ronde saat presentasi dan adu argumen.","skala":{"min":1,"max":4},"konversi_100":{"1":60,"2":75,"3":85,"4":95},"dimensi":[{"id":"qoa","label":"Quality of Analysis","bobot":0.25,"catatan":"Kesistematisan berpikir, penggunaan bukti dan data, ketelitian penalaran"},{"id":"al","label":"Active Listening","bobot":0.15,"catatan":"Penyerapan dan pemanfaatan masukan rekan sepanjang diskusi kelompok"},{"id":"sa","label":"Situational Awareness","bobot":0.15,"catatan":"Kepekaan membaca konteks cabang, stakeholder, dan dinamika ruangan"},{"id":"rc","label":"Risk Consciousness","bobot":0.15,"catatan":"Kesadaran risiko, kalibrasi mitigasi, kehati-hatian keputusan"},{"id":"ej","label":"Ethical Judgment","bobot":0.15,"catatan":"Pertimbangan etika dan kepatuhan fiqh muamalah BSI"},{"id":"pi","label":"People Impact","bobot":0.15,"catatan":"Pertimbangan dampak keputusan pada orang, tim, motivasi, dan beban kerja"}],"skor_perilaku_ronde":"jumlah(konversi_100 atas skor dimensi 1-4 x bobot), rentang 60-95","_catatan_label":"Label dimensi 6D terkunci final pada set rebuild 20 Mei 2026: Quality of Analysis, Active Listening, Situational Awareness, Risk Consciousness, Ethical Judgment, People Impact. Set ini yang dipakai seluruh deliverable termasuk Teaching Notes dan Instrumen Coach."},"l3":{"nama":"L3 Individu · Skor Simulasi per Peserta","rumus":"L3 = 0.30 * BPM_cabang_100 + 0.55 * skor_perilaku_rata2 + 0.15 * skor_defense","bpm_cabang_100":"(BPM Aggregate Weighted + 10) / 20 * 100, BPM Weighted di-clamp ke rentang -10..+10","skor_perilaku_rata2":"rata-rata Skor Perilaku 6D peserta lintas 6 ronde (20-100)","skor_defense":"Skor akhir Rubrik Defense per peserta, skala 0-100, diinput Branch Coach di coach.html setelah sesi Defense Hari Kedua","output":"0-100, dikonversi ke predikat A/B/C/D lalu indeks untuk SIM pada CPI","_catatan":"Komponen BPM bersifat kelompok sama untuk satu cabang, komponen perilaku dan Defense bersifat individu. Bobot 30/55/15 mengikuti Modul Peserta v1.0."},"skor_kelompok":{"rumus":"skor_kelompok = 0.70 * delta_cm_ternormalisasi + 0.30 * bpm_aggregate_weighted","delta_cm":"delta_cm = cm_tahunan_final - cm_tahunan_baseline (Rp Juta)","normalisasi_delta_cm":{"rp_juta_per_poin":200,"rumus":"delta_cm_ternormalisasi = delta_cm / 200"},"anchor_leaderboard":"Delta CM ternormalisasi adalah anchor peringkat antar cabang, memakai delta bukan absolut supaya adil untuk baseline berbeda."},"ronde":[{"kode":"R1","tema":"Diagnose the CM"},{"kode":"R2","tema":"Grow the Top Line"},{"kode":"R3","tema":"Optimize the Funding"},{"kode":"R4","tema":"Defend Against Erosion"},{"kode":"R5","tema":"Lead Through Pressure"},{"kode":"R6","tema":"Year-End Capstone"}],"tier_keputusan":{"tingkat":[{"id":"optimal","label":"Optimal","arah":"Keputusan terbaik, menyeimbangkan keempat indikator BPM"},{"id":"plausible","label":"Plausible","arah":"Keputusan masuk akal, ada kekurangan namun tidak merugikan"},{"id":"suboptimal","label":"Suboptimal","arah":"Keputusan kurang tepat, dampak negatif terbatas"},{"id":"trap","label":"Trap","arah":"Keputusan jebakan, dampak negatif signifikan"}],"panel_tier_assessment":{"mekanisme":"Setelah satu kelompok presentasi dan tanya jawab, tier final ditentukan oleh 5 suara: 1 suara Game Master ditambah 4 suara kelompok lain yang tidak sedang presentasi.","penentuan":"Tier final adalah suara terbanyak dari 5 masukan.","tiebreaker":"Bila suara terbelah tanpa mayoritas jelas, suara Game Master menjadi penentu.","input_gamemaster":"gamemaster.html","input_peer":"leader.html (5 Group Leader)","catatan":"Tier hanya variabel antara. Matriks Konsekuensi, Skor Kelompok, dan CPI di hilir tidak berubah, hanya cara tier ditentukan."},"matriks_konsekuensi":{"catatan":"Grid terkunci dari Matriks Konsekuensi Keputusan Opsi B. Delta CM dikalibrasi per cabang sebagai persentase RBB, dampak BPM seragam lima cabang. CM Impact dalam Rp Juta, dampak BPM dalam unit indikator. Urutan BPM cmq risk people csat. Struktur grid: grid[cabang][ronde][tier].","kalibrasi":"Opsi B terkunci 24 Mei 2026. Jalur all-optimal mendarat 111-116 persen RBB Outperform, jalur all-trap mendarat 67-78 persen RBB. Diponegoro all-trap 67 persen masuk Distress sesuai karakter cabang B4 Recovery.","grid":{"borobudur":{"r1":{"optimal":{"cmImpact":35,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":18,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":1,"risk":0,"people":0,"csat":0},"trap":{"cmImpact":-30,"cmq":-2,"risk":-3,"people":0,"csat":-1}},"r2":{"optimal":{"cmImpact":60,"cmq":3,"risk":1,"people":2,"csat":2},"plausible":{"cmImpact":30,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":1,"risk":-1,"people":0,"csat":0},"trap":{"cmImpact":-55,"cmq":-2,"risk":-3,"people":-1,"csat":-2}},"r3":{"optimal":{"cmImpact":50,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":25,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":1,"risk":-1,"people":0,"csat":-1},"trap":{"cmImpact":-45,"cmq":-2,"risk":-4,"people":0,"csat":-1}},"r4":{"optimal":{"cmImpact":40,"cmq":2,"risk":3,"people":1,"csat":2},"plausible":{"cmImpact":20,"cmq":1,"risk":2,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":0,"risk":1,"people":-1,"csat":0},"trap":{"cmImpact":-40,"cmq":-2,"risk":-5,"people":-1,"csat":-3}},"r5":{"optimal":{"cmImpact":35,"cmq":1,"risk":1,"people":4,"csat":2},"plausible":{"cmImpact":18,"cmq":1,"risk":1,"people":2,"csat":1},"suboptimal":{"cmImpact":5,"cmq":0,"risk":0,"people":1,"csat":0},"trap":{"cmImpact":-30,"cmq":-1,"risk":-1,"people":-4,"csat":-2}},"r6":{"optimal":{"cmImpact":85,"cmq":3,"risk":3,"people":3,"csat":3},"plausible":{"cmImpact":42,"cmq":2,"risk":2,"people":2,"csat":2},"suboptimal":{"cmImpact":5,"cmq":1,"risk":0,"people":0,"csat":1},"trap":{"cmImpact":-80,"cmq":-2,"risk":-4,"people":-3,"csat":-3}}},"prambanan":{"r1":{"optimal":{"cmImpact":40,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":20,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":1,"risk":0,"people":0,"csat":0},"trap":{"cmImpact":-35,"cmq":-2,"risk":-3,"people":0,"csat":-1}},"r2":{"optimal":{"cmImpact":70,"cmq":3,"risk":1,"people":2,"csat":2},"plausible":{"cmImpact":35,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":1,"risk":-1,"people":0,"csat":0},"trap":{"cmImpact":-60,"cmq":-2,"risk":-3,"people":-1,"csat":-2}},"r3":{"optimal":{"cmImpact":55,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":28,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":1,"risk":-1,"people":0,"csat":-1},"trap":{"cmImpact":-50,"cmq":-2,"risk":-4,"people":0,"csat":-1}},"r4":{"optimal":{"cmImpact":45,"cmq":2,"risk":3,"people":1,"csat":2},"plausible":{"cmImpact":22,"cmq":1,"risk":2,"people":1,"csat":1},"suboptimal":{"cmImpact":5,"cmq":0,"risk":1,"people":-1,"csat":0},"trap":{"cmImpact":-45,"cmq":-2,"risk":-5,"people":-1,"csat":-3}},"r5":{"optimal":{"cmImpact":40,"cmq":1,"risk":1,"people":4,"csat":2},"plausible":{"cmImpact":20,"cmq":1,"risk":1,"people":2,"csat":1},"suboptimal":{"cmImpact":5,"cmq":0,"risk":0,"people":1,"csat":0},"trap":{"cmImpact":-35,"cmq":-1,"risk":-1,"people":-4,"csat":-2}},"r6":{"optimal":{"cmImpact":95,"cmq":3,"risk":3,"people":3,"csat":3},"plausible":{"cmImpact":47,"cmq":2,"risk":2,"people":2,"csat":2},"suboptimal":{"cmImpact":5,"cmq":1,"risk":0,"people":0,"csat":1},"trap":{"cmImpact":-90,"cmq":-2,"risk":-4,"people":-3,"csat":-3}}},"diponegoro":{"r1":{"optimal":{"cmImpact":18,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":9,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":2,"cmq":1,"risk":0,"people":0,"csat":0},"trap":{"cmImpact":-12,"cmq":-2,"risk":-3,"people":0,"csat":-1}},"r2":{"optimal":{"cmImpact":32,"cmq":3,"risk":1,"people":2,"csat":2},"plausible":{"cmImpact":16,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":2,"cmq":1,"risk":-1,"people":0,"csat":0},"trap":{"cmImpact":-20,"cmq":-2,"risk":-3,"people":-1,"csat":-2}},"r3":{"optimal":{"cmImpact":26,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":13,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":2,"cmq":1,"risk":-1,"people":0,"csat":-1},"trap":{"cmImpact":-17,"cmq":-2,"risk":-4,"people":0,"csat":-1}},"r4":{"optimal":{"cmImpact":22,"cmq":2,"risk":3,"people":1,"csat":2},"plausible":{"cmImpact":11,"cmq":1,"risk":2,"people":1,"csat":1},"suboptimal":{"cmImpact":2,"cmq":0,"risk":1,"people":-1,"csat":0},"trap":{"cmImpact":-14,"cmq":-2,"risk":-5,"people":-1,"csat":-3}},"r5":{"optimal":{"cmImpact":18,"cmq":1,"risk":1,"people":4,"csat":2},"plausible":{"cmImpact":9,"cmq":1,"risk":1,"people":2,"csat":1},"suboptimal":{"cmImpact":2,"cmq":0,"risk":0,"people":1,"csat":0},"trap":{"cmImpact":-12,"cmq":-1,"risk":-1,"people":-4,"csat":-2}},"r6":{"optimal":{"cmImpact":44,"cmq":3,"risk":3,"people":3,"csat":3},"plausible":{"cmImpact":22,"cmq":2,"risk":2,"people":2,"csat":2},"suboptimal":{"cmImpact":2,"cmq":1,"risk":0,"people":0,"csat":1},"trap":{"cmImpact":-30,"cmq":-2,"risk":-4,"people":-3,"csat":-3}}},"gajah_mada":{"r1":{"optimal":{"cmImpact":8,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":4,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":1,"cmq":1,"risk":0,"people":0,"csat":0},"trap":{"cmImpact":-5,"cmq":-2,"risk":-3,"people":0,"csat":-1}},"r2":{"optimal":{"cmImpact":14,"cmq":3,"risk":1,"people":2,"csat":2},"plausible":{"cmImpact":7,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":1,"cmq":1,"risk":-1,"people":0,"csat":0},"trap":{"cmImpact":-9,"cmq":-2,"risk":-3,"people":-1,"csat":-2}},"r3":{"optimal":{"cmImpact":11,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":6,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":1,"cmq":1,"risk":-1,"people":0,"csat":-1},"trap":{"cmImpact":-8,"cmq":-2,"risk":-4,"people":0,"csat":-1}},"r4":{"optimal":{"cmImpact":9,"cmq":2,"risk":3,"people":1,"csat":2},"plausible":{"cmImpact":5,"cmq":1,"risk":2,"people":1,"csat":1},"suboptimal":{"cmImpact":1,"cmq":0,"risk":1,"people":-1,"csat":0},"trap":{"cmImpact":-7,"cmq":-2,"risk":-5,"people":-1,"csat":-3}},"r5":{"optimal":{"cmImpact":8,"cmq":1,"risk":1,"people":4,"csat":2},"plausible":{"cmImpact":4,"cmq":1,"risk":1,"people":2,"csat":1},"suboptimal":{"cmImpact":1,"cmq":0,"risk":0,"people":1,"csat":0},"trap":{"cmImpact":-5,"cmq":-1,"risk":-1,"people":-4,"csat":-2}},"r6":{"optimal":{"cmImpact":20,"cmq":3,"risk":3,"people":3,"csat":3},"plausible":{"cmImpact":10,"cmq":2,"risk":2,"people":2,"csat":2},"suboptimal":{"cmImpact":1,"cmq":1,"risk":0,"people":0,"csat":1},"trap":{"cmImpact":-14,"cmq":-2,"risk":-4,"people":-3,"csat":-3}}},"majapahit":{"r1":{"optimal":{"cmImpact":60,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":30,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":8,"cmq":1,"risk":0,"people":0,"csat":0},"trap":{"cmImpact":-55,"cmq":-2,"risk":-3,"people":0,"csat":-1}},"r2":{"optimal":{"cmImpact":105,"cmq":3,"risk":1,"people":2,"csat":2},"plausible":{"cmImpact":52,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":8,"cmq":1,"risk":-1,"people":0,"csat":0},"trap":{"cmImpact":-95,"cmq":-2,"risk":-3,"people":-1,"csat":-2}},"r3":{"optimal":{"cmImpact":90,"cmq":3,"risk":2,"people":1,"csat":1},"plausible":{"cmImpact":45,"cmq":2,"risk":1,"people":1,"csat":1},"suboptimal":{"cmImpact":8,"cmq":1,"risk":-1,"people":0,"csat":-1},"trap":{"cmImpact":-80,"cmq":-2,"risk":-4,"people":0,"csat":-1}},"r4":{"optimal":{"cmImpact":75,"cmq":2,"risk":3,"people":1,"csat":2},"plausible":{"cmImpact":38,"cmq":1,"risk":2,"people":1,"csat":1},"suboptimal":{"cmImpact":8,"cmq":0,"risk":1,"people":-1,"csat":0},"trap":{"cmImpact":-70,"cmq":-2,"risk":-5,"people":-1,"csat":-3}},"r5":{"optimal":{"cmImpact":60,"cmq":1,"risk":1,"people":4,"csat":2},"plausible":{"cmImpact":30,"cmq":1,"risk":1,"people":2,"csat":1},"suboptimal":{"cmImpact":8,"cmq":0,"risk":0,"people":1,"csat":0},"trap":{"cmImpact":-55,"cmq":-1,"risk":-1,"people":-4,"csat":-2}},"r6":{"optimal":{"cmImpact":150,"cmq":3,"risk":3,"people":3,"csat":3},"plausible":{"cmImpact":75,"cmq":2,"risk":2,"people":2,"csat":2},"suboptimal":{"cmImpact":10,"cmq":1,"risk":0,"people":0,"csat":1},"trap":{"cmImpact":-140,"cmq":-2,"risk":-4,"people":-3,"csat":-3}}}}}},"cpi":{"nama":"Competency Performance Index · Opsi A","rumus":"CPI = (Indeks_POST * 2 + Indeks_SIM * 16) / 18","komponen":{"POST":"Post-Test L2 Bank Soal, 2 jam, dari Excel BSI","SIM":"Simulasi L3, 16 jam, dari Scoring System"},"indeks_predikat":{"A":4,"B":3,"C":2,"D":1},"predikat_nilai":{"A":[90,100],"B":[80,89],"C":[70,79],"D":[0,69]},"kelulusan":{"lulus":">= 3.00","belum_lulus":"< 3.00"},"pre_test":"Hanya untuk Learning Gain, informatif, tidak masuk CPI."},"kelompok":[{"id":"borobudur","nama":"Borobudur","anggota":6},{"id":"prambanan","nama":"Prambanan","anggota":6},{"id":"diponegoro","nama":"Diponegoro","anggota":6},{"id":"gajah_mada","nama":"Gajah Mada","anggota":6},{"id":"majapahit","nama":"Majapahit","anggota":6}],"kode_akses":{"BSI2026ADMIN":"admin.html","BSI2026GM":"gamemaster.html","BSI2026LAYAR":"projector.html","BSI2026BOARD":"board.html","BSI2026REPORT":"report.html","COACH2026G1":"coach.html · Borobudur","COACH2026G2":"coach.html · Prambanan","COACH2026G3":"coach.html · Diponegoro","COACH2026G4":"coach.html · Gajah Mada","COACH2026G5":"coach.html · Majapahit","LEADER2026G1":"leader.html · Borobudur","LEADER2026G2":"leader.html · Prambanan","LEADER2026G3":"leader.html · Diponegoro","LEADER2026G4":"leader.html · Gajah Mada","LEADER2026G5":"leader.html · Majapahit"},"branding":{"warna_primer_teal":"#00A39D","warna_sekunder_gold":"#F8AD3C","logo":["Danantara","BSI"],"logo_lockup":"Danantara di kiri, BSI di kanan, background transparan, tinggi sejajar, lebar proporsional.","aturan":"Material yang dipakai peserta dan layar simulasi hanya logo BSI dan Danantara, tanpa logo HCR.ID."},"cabang":[{"id":"borobudur","nama":"KCP Borobudur","kelas":"KCP Kelas B3 · Mature","sub_regional":"Jawa Tengah","kota":"Magelang","tahun_berdiri":2015,"usia_operasional_tahun":11,"npf":"2,0%","outstanding_pembiayaan_jt":58000,"dpk_total_jt":78000,"cm_ytd_q1_jt":362.38,"cm_tahunan_baseline_jt":1449.5,"rbb_cm_tahunan_jt":1522,"posisi_awal_vs_rbb":0.9524,"posisi_awal_vs_rbb_persen":95.2,"posisi_awal_zona":"target_spm","bpm_awal":{"contribution_margin":7,"risk":7,"people":4,"customer_satisfaction":6}},{"id":"prambanan","nama":"KCP Prambanan","kelas":"KCP Kelas B3 · Tumbuh","sub_regional":"Jawa Tengah","kota":"Klaten","tahun_berdiri":2015,"usia_operasional_tahun":11,"npf":"1,8%","outstanding_pembiayaan_jt":55000,"dpk_total_jt":70000,"cm_ytd_q1_jt":387.44,"cm_tahunan_baseline_jt":1549.75,"rbb_cm_tahunan_jt":1705,"posisi_awal_vs_rbb":0.9089,"posisi_awal_vs_rbb_persen":90.9,"posisi_awal_zona":"recovery","bpm_awal":{"contribution_margin":5,"risk":5,"people":6,"customer_satisfaction":5}},{"id":"diponegoro","nama":"KCP Diponegoro","kelas":"KCP Kelas B4 · Recovery","sub_regional":"Jawa Tengah","kota":"Semarang","tahun_berdiri":2015,"usia_operasional_tahun":11,"npf":"3,9%","outstanding_pembiayaan_jt":44000,"dpk_total_jt":52000,"cm_ytd_q1_jt":120.06,"cm_tahunan_baseline_jt":480.25,"rbb_cm_tahunan_jt":557,"posisi_awal_vs_rbb":0.8622,"posisi_awal_vs_rbb_persen":86.2,"posisi_awal_zona":"recovery","bpm_awal":{"contribution_margin":-2,"risk":-3,"people":2,"customer_satisfaction":1}},{"id":"gajah_mada","nama":"KCP Gajah Mada","kelas":"KCP Kelas B4 · Greenfield","sub_regional":"Jawa Timur","kota":"Mojokerto","tahun_berdiri":2015,"usia_operasional_tahun":11,"npf":"1,5%","outstanding_pembiayaan_jt":30000,"dpk_total_jt":38000,"cm_ytd_q1_jt":62.41,"cm_tahunan_baseline_jt":249.65,"rbb_cm_tahunan_jt":280,"posisi_awal_vs_rbb":0.8916,"posisi_awal_vs_rbb_persen":89.2,"posisi_awal_zona":"recovery","bpm_awal":{"contribution_margin":-5,"risk":6,"people":5,"customer_satisfaction":3}},{"id":"majapahit","nama":"KCP Majapahit","kelas":"KCP Kelas B3 · Premium","sub_regional":"Jawa Timur","kota":"Trowulan","tahun_berdiri":2015,"usia_operasional_tahun":11,"npf":"1,4%","outstanding_pembiayaan_jt":70000,"dpk_total_jt":95000,"cm_ytd_q1_jt":650,"cm_tahunan_baseline_jt":2600,"rbb_cm_tahunan_jt":2704,"posisi_awal_vs_rbb":0.9615,"posisi_awal_vs_rbb_persen":96.2,"posisi_awal_zona":"target_spm","bpm_awal":{"contribution_margin":6,"risk":6,"people":5,"customer_satisfaction":7}}],"panduan_kalibrasi_delta_cm":{"status":"ADVISORY · angka final dikunci saat membangun kartu skenario R1-R6","prinsip":"Delta CM per ronde dikalibrasi sebagai persentase RBB cabang, bukan rupiah seragam, supaya zona vs RBB tetap bermakna lintas ukuran cabang.","band_per_ronde_persen_rbb":{"optimal":[0.08,0.12],"plausible":[0.03,0.07],"suboptimal":[-0.01,0.02],"trap":[-0.1,-0.03]},"target_arc":"Kelompok jalur all-optimal berakhir di kisaran 115-125% RBB (Outperform). Kelompok jalur all-trap turun ke kisaran 70-80% RBB (Recovery bawah hingga Distress)."}};
+const MASTER = {"_meta":{"dokumen":"BSI Next BM School 2026 · Branch Banking Simulation · Master Reference","versi":"4.0","tanggal_kunci":"2026-05-25","status":"LOCKED","fungsi":"Sumber kebenaran tunggal untuk Scoring System v4 dan seluruh deliverable hilir. Tidak ada angka baseline yang boleh diketik ulang terpisah.","satuan_nominal":"CM, DPK, Financing dalam Rp Miliar pada tampilan. Delta CM dan baseline mesin dalam Rp Juta.","sumber_baseline":"Stage 1 Master Data Calibration dan 5 file PnL Cabang (Jakarta, Bandung, Surabaya, Medan, Makassar).","perubahan_dari_v3":"Identitas 5 cabang nasional menggantikan nama Jawa; kalibrasi finansial baru; Delta CM seragam lintas cabang; BPM 4 indikator tier flat +10/+5/0/-10 dinilai langsung GM dan Group Leader; L3 30/70 tanpa Defense. Zona CM Tracker tetap rasio vs RBB seperti v3."},"ronde":[{"kode":"R1","tema":"Diagnose the CM","tier":["optimal","plausible","suboptimal"]},{"kode":"R2","tema":"Grow the Top Line","tier":["optimal","plausible","suboptimal","trap"]},{"kode":"R3","tema":"Optimize the Funding","tier":["optimal","plausible","suboptimal","trap"]},{"kode":"R4","tema":"Defend Against Erosion","tier":["optimal","plausible","suboptimal","trap"]},{"kode":"R5","tema":"Lead Through Pressure","tier":["optimal","plausible","suboptimal","trap"]},{"kode":"R6","tema":"Year-End Capstone","tier":["optimal","plausible","suboptimal","trap"]}],"tier_keputusan":{"tingkat":[{"id":"optimal","label":"Optimal"},{"id":"plausible","label":"Plausible"},{"id":"suboptimal","label":"Suboptimal"},{"id":"trap","label":"Trap"}],"catatan":"R1 Diagnose hanya tiga tier, tanpa Trap. Tanda Trap tidak berlaku di R1.","panel_tier_assessment":{"mekanisme":"Setelah satu kelompok presentasi, penilaian dilakukan oleh Game Master dan panel Group Leader. Tidak berubah dari v3.","input_gamemaster":"gamemaster.html","input_peer":"leader.html"}},"delta_cm":{"satuan":"Rp Juta","seragam_lintas_cabang":true,"per_ronde":{"r1":{"optimal":90,"plausible":60,"suboptimal":30},"r2":{"optimal":320,"plausible":230,"suboptimal":115,"trap":-30},"r3":{"optimal":270,"plausible":195,"suboptimal":95,"trap":-40},"r4":{"optimal":160,"plausible":115,"suboptimal":60,"trap":-50},"r5":{"optimal":220,"plausible":155,"suboptimal":75,"trap":-45},"r6":{"optimal":340,"plausible":245,"suboptimal":125,"trap":-35}},"sigma_setahun":{"optimal":1400,"plausible":1000,"suboptimal":500,"trap":-200},"catatan":"Delta CM per tier per ronde bernilai tetap dan identik untuk kelima cabang. Jalur all-optimal Σ +1.400 Jt, all-trap −200 Jt.","pengikat_tier":"Delta CM ronde ditentukan oleh tier indikator CM Quality. Tidak ada input tier kelima terpisah."},"zona_realisasi_cm":{"satuan":"Rp Juta","definisi":"Realisasi CM akhir tahun = CM FY2025 + Σ Delta CM. Empat band per cabang menggantikan zona rasio RBB v3.","anchor_leaderboard":"Σ Delta CM rupiah lintas R1-R6, bukan persentase pencapaian RBB.","band":{"jakarta":{"trap":-600.0,"suboptimal":100.0,"plausible":600.0,"optimal":1000.0},"bandung":{"trap":1100.0,"suboptimal":1800.0,"plausible":2300.0,"optimal":2700.0},"surabaya":{"trap":1460.0,"suboptimal":2160.0,"plausible":2660.0,"optimal":3060.0},"medan":{"trap":600.0,"suboptimal":1300.0,"plausible":1800.0,"optimal":2200.0},"makassar":{"trap":460.0,"suboptimal":1160.0,"plausible":1660.0,"optimal":2060.0}},"peran":"Tabel referensi pendaratan CM per jalur tier. Bukan model zona CM Tracker, hanya rujukan kalibrasi."},"branch_performance_meter":{"model":"Empat indikator dinilai tier-nya masing-masing per ronde.","indikator":[{"id":"cmq","label":"CM Quality","bobot":0.4},{"id":"risk","label":"Risk","bobot":0.25},{"id":"people","label":"People","bobot":0.2},{"id":"csat","label":"Customer Satisfaction","bobot":0.15}],"tier_poin":{"optimal":10,"plausible":5,"suboptimal":0,"trap":-10},"bpm_per_ronde":"Blend tertimbang 40/25/20/15 dari empat poin tier indikator, lalu rata-rata penilaian Game Master dan Group Leader.","bpm_kumulatif":"Σ enam ronde. Komponen tier −50 sampai +60. R1 tanpa Trap.","skala_total":{"min":-50,"max":90,"catatan":"−50..+60 dari tier ditambah 0..+30 Koin Amanah."},"tiga_hat":{"business_leader_hat":["cmq"],"risk_leader_hat":["risk"],"people_leader_hat":["people","csat"]}},"amanah_points":{"satuan":"1 koin = +1 BPM Total","maks_per_ronde":5,"sigma_maks":30,"catatan":"Wewenang tunggal Game Master. Hanya positif. Tidak masuk Skor Kelompok maupun CPI."},"behavior_6d":{"tidak_berubah_dari_v3":true,"skala":{"min":1,"max":4},"konversi_100":{"1":60,"2":75,"3":85,"4":95},"dimensi":[{"id":"qoa","label":"Quality of Analysis","bobot":0.25},{"id":"al","label":"Active Listening","bobot":0.15},{"id":"sa","label":"Situational Awareness","bobot":0.15},{"id":"rc","label":"Risk Consciousness","bobot":0.15},{"id":"ej","label":"Ethical Judgment","bobot":0.15},{"id":"pi","label":"People Impact","bobot":0.15}]},"l3":{"rumus":"L3 = 0.30 × BPM_100 + 0.70 × Behavior_6D_rata2","bpm_100":"(BPM kumulatif tier + 50) / 110 × 100, clamp 0..100","perubahan":"v3 memakai 30/55/15 dengan komponen Defense. v4 menjadi 30/70 tanpa Defense, sesuai Stage 1 sheet 4.","output":"0-100, dikonversi ke predikat A/B/C/D lalu indeks SIM."},"skor_kelompok":{"rumus":"Skor Kelompok = 0.70 × cm_index + 0.30 × bpm_index, rentang 0-100","cm_index":"Σ Delta CM dinormalkan global, −200 Jt → 0, +1.400 Jt → 100. Envelope sama untuk lima cabang.","bpm_index":"BPM kumulatif tier dinormalkan global, −50 → 0, +60 → 100.","anchor":"Σ Delta CM rupiah. Adil lintas ukuran cabang karena Delta CM seragam."},"cpi":{"tidak_berubah_dari_v3":true,"rumus":"CPI = (Indeks_POST × 2 + Indeks_SIM × 16) / 18","indeks_predikat":{"A":4,"B":3,"C":2,"D":1},"predikat_nilai":{"A":[90,100],"B":[80,89],"C":[70,79],"D":[0,69]},"kelulusan":{"lulus":">= 3.00"}},"kelompok":[{"id":"jakarta","nama":"Jakarta","anggota":6},{"id":"bandung","nama":"Bandung","anggota":6},{"id":"surabaya","nama":"Surabaya","anggota":6},{"id":"medan","nama":"Medan","anggota":6},{"id":"makassar","nama":"Makassar","anggota":6}],"cabang":[{"id":"jakarta","nama":"KCP Jakarta","provinsi":"DKI Jakarta","tipe":"B4","arketipe":"Reviewed","kelas":"KCP Kelas B4 · Reviewed","kota":"Jakarta","tahun_berdiri":2015,"usia_operasional_tahun":11,"dpk_m":60,"financing_m":47,"fdr":0.7833,"npf":"1,7%","fte":9,"cm_fy2025_m":-0.4,"rbb_cm_m":0.25,"gap_rbb_m":0.65,"cm_per_fte_jt":-44.44,"tensi":"CM negatif walau tim ramping; pasar captive ASN aman tapi tipis margin, pembalikan lewat pertumbuhan dan bauran bukan pemangkasan orang","cm_fy2025_jt":-400.0,"rbb_cm_jt":250.0,"posisi_awal_vs_rbb":-1.6,"posisi_awal_zona":"distress"},{"id":"bandung","nama":"KCP Bandung","provinsi":"Jawa Barat","tipe":"B3","arketipe":"Grow","kelas":"KCP Kelas B3 · Grow","kota":"Bandung","tahun_berdiri":2015,"usia_operasional_tahun":11,"dpk_m":70,"financing_m":64,"fdr":0.9143,"npf":"2,6%","fte":9,"cm_fy2025_m":1.3,"rbb_cm_m":1.4,"gap_rbb_m":0.1,"cm_per_fte_jt":144.44,"tensi":"Momentum nyata tapi rapuh; jaga laju tanpa menurunkan kualitas aset","cm_fy2025_jt":1300.0,"rbb_cm_jt":1400.0,"posisi_awal_vs_rbb":0.9286,"posisi_awal_zona":"recovery"},{"id":"surabaya","nama":"KCP Surabaya","provinsi":"Jawa Timur","tipe":"B3","arketipe":"Premium flagship","kelas":"KCP Kelas B3 · Premium flagship","kota":"Surabaya","tahun_berdiri":2015,"usia_operasional_tahun":11,"dpk_m":95,"financing_m":88,"fdr":0.9263,"npf":"2,3%","fte":12,"cm_fy2025_m":1.66,"rbb_cm_m":1.8,"gap_rbb_m":0.14,"cm_per_fte_jt":138.33,"tensi":"Juara di rupiah tapi kurang produktif per kepala; winner's dilemma","cm_fy2025_jt":1660.0,"rbb_cm_jt":1800.0,"posisi_awal_vs_rbb":0.9222,"posisi_awal_zona":"recovery"},{"id":"medan","nama":"KCP Medan","provinsi":"Sumatera Utara","tipe":"B4","arketipe":"Recovery","kelas":"KCP Kelas B4 · Recovery","kota":"Medan","tahun_berdiri":2015,"usia_operasional_tahun":11,"dpk_m":52,"financing_m":58,"fdr":1.1154,"npf":"3,9%","fte":10,"cm_fy2025_m":0.8,"rbb_cm_m":1.15,"gap_rbb_m":0.35,"cm_per_fte_jt":80.0,"tensi":"NPF 3,9% dan FDR 112% menekan bersamaan; turnaround di bawah tekanan risiko","cm_fy2025_jt":800.0,"rbb_cm_jt":1150.0,"posisi_awal_vs_rbb":0.6957,"posisi_awal_zona":"distress"},{"id":"makassar","nama":"KCP Makassar","provinsi":"Sulawesi Selatan","tipe":"B4","arketipe":"Greenfield","kelas":"KCP Kelas B4 · Greenfield","kota":"Makassar","tahun_berdiri":2015,"usia_operasional_tahun":11,"dpk_m":38,"financing_m":30,"fdr":0.7895,"npf":"3,1%","fte":9,"cm_fy2025_m":0.66,"rbb_cm_m":1.05,"gap_rbb_m":0.39,"cm_per_fte_jt":73.33,"tensi":"Cabang muda, basis belum terbentuk; bangun buku dan tim dari tipis","cm_fy2025_jt":660.0,"rbb_cm_jt":1050.0,"posisi_awal_vs_rbb":0.6286,"posisi_awal_zona":"distress"}],"kode_akses":{"BSI2026ADMIN":"admin.html","BSI2026GM":"gamemaster.html","BSI2026LAYAR":"projector.html","BSI2026BOARD":"board.html","BSI2026REPORT":"report.html","COACH2026G1":"coach.html · KCP Jakarta","COACH2026G2":"coach.html · KCP Bandung","COACH2026G3":"coach.html · KCP Surabaya","COACH2026G4":"coach.html · KCP Medan","COACH2026G5":"coach.html · KCP Makassar","LEADER2026G1":"leader.html · KCP Jakarta","LEADER2026G2":"leader.html · KCP Bandung","LEADER2026G3":"leader.html · KCP Surabaya","LEADER2026G4":"leader.html · KCP Medan","LEADER2026G5":"leader.html · KCP Makassar"},"branding":{"warna_primer_teal":"#00A39D","warna_sekunder_gold":"#F8AD3C","logo":["Danantara","BSI"],"logo_lockup":"Danantara kiri, BSI kanan, tinggi sejajar, lebar proporsional."},"disclaimer_wajib":"Cabang, tokoh, dan seluruh data finansial dalam materi ini bersifat fiktif, disusun semata untuk keperluan simulasi pembelajaran, dan tidak merepresentasikan kantor cabang BSI mana pun.","model_zona":{"nama":"Model vs RBB","definisi":"Zona CM Tracker dari rasio CM Tahunan berjalan dibagi RBB CM 2026 cabang itu sendiri. Dipertahankan dari v3.","rumus_rasio":"rasio = cm_tahunan_berjalan / rbb_cm_2026","cm_tahunan_berjalan":"cm_fy2025 + Σ Delta CM enam ronde","tingkat":[{"id":"outperform","label":"Outperform","min_rasio":1.1,"max_rasio":null,"warna":"#00A39D"},{"id":"target_spm","label":"Target SPM","min_rasio":0.95,"max_rasio":1.1,"warna":"#F8AD3C"},{"id":"recovery","label":"Recovery","min_rasio":0.75,"max_rasio":0.95,"warna":"#9A8C7A"},{"id":"distress","label":"Distress","min_rasio":null,"max_rasio":0.75,"warna":"#8C2F39"}],"catatan":"Zona dipakai hanya sebagai label kualitatif pada CM Tracker. Angka rasio persentase tidak ditampilkan."},"cm_tracker":{"tampilkan_persentase":false,"metrik_utama":["cm_tahunan_berjalan","delta_cm_akumulasi","cm_per_pegawai","zona_label"],"catatan":"Tampilan CM Tracker fokus pada Delta CM akumulasi sebagai sorotan. Persentase rasio RBB tidak ditampilkan agar cabang ber-RBB kecil tidak terlihat ekstrem. Zona tetap muncul sebagai label kualitatif. CM per Pegawai = CM Tahunan berjalan dibagi jumlah FTE cabang."}};
 const ACCESS_CODES = {"BSI2026ADMIN":{"role":"admin","g":0,"lbl":"Master Admin","page":"admin.html"},"BSI2026GM":{"role":"gamemaster","g":0,"lbl":"Game Master","page":"gamemaster.html"},"BSI2026LAYAR":{"role":"projector","g":0,"lbl":"Layar Proyektor","page":"projector.html"},"BSI2026BOARD":{"role":"board","g":0,"lbl":"Visual Board","page":"board.html"},"BSI2026REPORT":{"role":"report","g":0,"lbl":"Report Officer","page":"report.html"},"COACH2026G1":{"role":"coach","g":1,"lbl":"Branch Coach","page":"coach.html"},"LEADER2026G1":{"role":"leader","g":1,"lbl":"Group Leader","page":"leader.html"},"COACH2026G2":{"role":"coach","g":2,"lbl":"Branch Coach","page":"coach.html"},"LEADER2026G2":{"role":"leader","g":2,"lbl":"Group Leader","page":"leader.html"},"COACH2026G3":{"role":"coach","g":3,"lbl":"Branch Coach","page":"coach.html"},"LEADER2026G3":{"role":"leader","g":3,"lbl":"Group Leader","page":"leader.html"},"COACH2026G4":{"role":"coach","g":4,"lbl":"Branch Coach","page":"coach.html"},"LEADER2026G4":{"role":"leader","g":4,"lbl":"Group Leader","page":"leader.html"},"COACH2026G5":{"role":"coach","g":5,"lbl":"Branch Coach","page":"coach.html"},"LEADER2026G5":{"role":"leader","g":5,"lbl":"Group Leader","page":"leader.html"}};
 
-/* ── Pustaka Formula Scoring · BSI BBS v3 ──────────────────────────────── */
+/* Pustaka Formula Scoring · BSI BBS v4 */
 const FX = (function(){
   const cab = {}; MASTER.cabang.forEach(c=>cab[c.id]=c);
   const grpToCab = {}; MASTER.kelompok.forEach((g,i)=>grpToCab[i+1]=g.id);
+  const ROUNDS = MASTER.ronde.length;
+  const TPTS = MASTER.branch_performance_meter.tier_poin;
+  const WT = {}; MASTER.branch_performance_meter.indikator.forEach(x=>WT[x.id]=x.bobot);
+  const DCM = MASTER.delta_cm.per_ronde;
+  const SIG = MASTER.delta_cm.sigma_setahun;
+  const BPM_FLOOR=-50, BPM_CEIL=60;
 
   function cabang(idOrIdx){
     if(typeof idOrIdx==='number') return cab[grpToCab[idOrIdx]];
     return cab[idOrIdx];
   }
-  /* Zona CM Tracker dari rasio CM Tahunan / RBB CM Tahunan. */
+  /* Zona CM Tracker · label kualitatif dari rasio CM Tahunan / RBB. Persentase tidak ditampilkan. */
   function zonaOf(rasio){
     for(const z of MASTER.model_zona.tingkat){
-      const lo = z.min_rasio==null ? -1e9 : z.min_rasio;
-      const hi = z.max_rasio==null ?  1e9 : z.max_rasio;
+      const lo=z.min_rasio==null?-1e9:z.min_rasio, hi=z.max_rasio==null?1e9:z.max_rasio;
       if(rasio>=lo && rasio<hi) return z;
     }
-    return rasio>=1.10 ? MASTER.model_zona.tingkat[0]
-                       : MASTER.model_zona.tingkat[MASTER.model_zona.tingkat.length-1];
+    return rasio>=1.10?MASTER.model_zona.tingkat[0]
+                      :MASTER.model_zona.tingkat[MASTER.model_zona.tingkat.length-1];
   }
-  /* CM Tahunan berjalan = baseline + akumulasi CM Impact 6 ronde (Rp Juta). */
-  function cmTahunan(branch, totalImpact){
-    const c = cabang(branch); return c.cm_tahunan_baseline_jt + (totalImpact||0);
+  function tierPts(t){ return (t&&TPTS[t]!=null)?TPTS[t]:0; }
+  /* Delta CM ronde · ditentukan tier indikator CM Quality, tabel seragam lima cabang (Rp Juta). */
+  function deltaCmRonde(roundKey, cmqTier){
+    const row=DCM[roundKey]||{}; return (cmqTier&&row[cmqTier]!=null)?row[cmqTier]:0;
   }
-  function rasioRBB(branch, cmTahunanVal){
-    return cmTahunanVal / cabang(branch).rbb_cm_tahunan_jt;
+  /* BPM ronde · blend tertimbang 40/25/20/15 dari poin tier empat indikator. */
+  function bpmRonde(t){
+    if(!t) return 0;
+    return tierPts(t.cmq)*WT.cmq + tierPts(t.risk)*WT.risk
+         + tierPts(t.people)*WT.people + tierPts(t.csat)*WT.csat;
   }
-  function deltaCm(branch, totalImpact){ return (totalImpact||0); }
-  /* Normalisasi Δ CM ke poin leaderboard · Rp 200 jt = 1 poin. */
-  function deltaCmNorm(deltaCmVal){
-    return deltaCmVal / MASTER.skor_kelompok.normalisasi_delta_cm.rp_juta_per_poin;
+  /* BPM Aggregate Weighted dari akumulasi poin per indikator. Identik dengan Σ BPM ronde. */
+  function bpmWeighted(b){
+    if(!b) return 0;
+    return (b.cm||0)*WT.cmq+(b.risk||0)*WT.risk+(b.people||0)*WT.people+(b.csat||0)*WT.csat;
   }
-  /* BPM Aggregate Weighted · bobot 40/25/20/15, skala -10..+10. */
-  function bpmWeighted(bpm){
-    const w = MASTER.branch_performance_meter.bobot_weighted;
-    return  (bpm.cm||0)*w.contribution_margin + (bpm.risk||0)*w.risk
-          + (bpm.people||0)*w.people + (bpm.csat||0)*w.customer_satisfaction;
+  function normIndex(val,floor,ceil){
+    if(ceil<=floor) return 0;
+    const x=(val-floor)/(ceil-floor)*100;
+    return x<0?0:x>100?100:x;
   }
-  /* Skor Kelompok = 70% Δ CM ternormalisasi + 30% BPM Weighted. */
-  function skorKelompok(deltaCmVal, bpm){
-    return 0.70*deltaCmNorm(deltaCmVal) + 0.30*bpmWeighted(bpm);
+  /* Envelope global seragam lima cabang · Σ Delta CM -200..+1400, BPM -50..+60. */
+  function cmIndex(sigmaDelta){ return normIndex(sigmaDelta||0, SIG.trap, SIG.optimal); }
+  function bpmIndex(bpmCum){ return normIndex(bpmCum||0, BPM_FLOOR, BPM_CEIL); }
+  /* Skor Kelompok 0-100 = 70% Σ Delta CM ternormalisasi + 30% BPM ternormalisasi. */
+  function skorKelompok(sigmaDelta,bpmCum){
+    return 0.70*cmIndex(sigmaDelta)+0.30*bpmIndex(bpmCum);
   }
-  /* Panel Tier Assessment · tier final dari 5 suara, GM penentu bila seri. */
+  /* Panel Tier Assessment · tier final dari suara, GM penentu bila seri. */
   function tierFinal(gmVote, peerVotes){
-    const all = [gmVote].concat(peerVotes||[]).filter(Boolean);
+    const all=[gmVote].concat(peerVotes||[]).filter(Boolean);
     if(all.length===0) return null;
-    const tally = {};
-    all.forEach(t=> tally[t]=(tally[t]||0)+1 );
-    let best=null, bestN=-1, tie=false;
+    const tally={}; all.forEach(t=>tally[t]=(tally[t]||0)+1);
+    let best=null,bestN=-1,tie=false;
     for(const t in tally){
       if(tally[t]>bestN){ best=t; bestN=tally[t]; tie=false; }
       else if(tally[t]===bestN){ tie=true; }
     }
-    return tie ? gmVote : best;   /* seri tanpa mayoritas → suara Game Master */
+    return tie?gmVote:best;
   }
-  /* CPI Opsi A · indeks dari predikat. */
-  function indeksPredikat(nilai){
-    if(nilai>=90) return 4; if(nilai>=80) return 3; if(nilai>=70) return 2; return 1;
-  }
-  function predikat(nilai){
-    if(nilai>=90) return 'A'; if(nilai>=80) return 'B'; if(nilai>=70) return 'C'; return 'D';
-  }
-  function cpi(idxPost, idxSim){ return (idxPost*2 + idxSim*16)/18; }
-
-  /* Skor Perilaku 6D per ronde · jumlah(konversi_100[skor 1-4] × bobot) → 60-95. */
+  function indeksPredikat(n){ if(n>=90)return 4; if(n>=80)return 3; if(n>=70)return 2; return 1; }
+  function predikat(n){ if(n>=90)return 'A'; if(n>=80)return 'B'; if(n>=70)return 'C'; return 'D'; }
+  function cpi(idxPost,idxSim){ return (idxPost*2+idxSim*16)/18; }
   function behaviorScore(dims){
-    let s=0;
-    var kv=MASTER.behavior_6d.konversi_100;
-    MASTER.behavior_6d.dimensi.forEach(d=>{ s += (kv[dims[d.id]]||0)*d.bobot; });
+    let s=0; const kv=MASTER.behavior_6d.konversi_100;
+    MASTER.behavior_6d.dimensi.forEach(d=>{ s+=(kv[dims[d.id]]||0)*d.bobot; });
     return s;
   }
-  /* BPM Aggregate Weighted (-10..+10) dinormalkan ke 0-100. */
-  function bpmTo100(bpmW){
-    const c=Math.max(-10,Math.min(10,bpmW));
-    return (c+10)/20*100;
+  /* BPM kumulatif tier (-50..+60) dinormalkan ke 0-100. */
+  function bpm100(bpmCum){
+    const c=Math.max(BPM_FLOOR,Math.min(BPM_CEIL,bpmCum||0));
+    return (c-BPM_FLOOR)/(BPM_CEIL-BPM_FLOOR)*100;
   }
-  /* L3 individu · 30% BPM cabang + 55% rata-rata Skor Perilaku 6D + 15% Skor Defense. */
-  function l3(bpmW, perilakuRata2, defense){
-    return 0.30*bpmTo100(bpmW) + 0.55*(perilakuRata2||0) + 0.15*(defense||0);
+  /* L3 individu v4 · 30% BPM + 70% Skor Perilaku 6D. Komponen Defense dilepas. */
+  function l3(bpmCum, perilakuRata2){
+    return 0.30*bpm100(bpmCum) + 0.70*(perilakuRata2||0);
   }
-
-  /* Derivasi posisi seluruh cabang dari snapshot /tier RTDB.
-     Mengakumulasi konsekuensi tiap ronde yang sudah difinalisasi. */
+  /* Derivasi posisi cabang dari snapshot /tier RTDB.
+     v4: /tier/r{n}/{cabang} = {final, cmq, risk, people, csat} tier per indikator. */
   function deriveAll(tierSnap, amanahSnap){
-    tierSnap = tierSnap || {};
-    amanahSnap = amanahSnap || {};
-    const rounds = MASTER.ronde.length;
-    const clamp = v => Math.max(-10, Math.min(10, v));
+    tierSnap=tierSnap||{}; amanahSnap=amanahSnap||{};
     return MASTER.cabang.map(c=>{
-      let cmImpact=0,dCm=0,dRisk=0,dPeople=0,dCsat=0,roundsDone=0;
-      for(let n=1;n<=rounds;n++){
-        const t = tierSnap['r'+n] && tierSnap['r'+n][c.id];
-        if(t && t.final && t.consequence){
-          const k=t.consequence;
-          cmImpact += (+k.cmImpact||0);
-          dCm += (+k.dCm||0);  dRisk += (+k.dRisk||0);
-          dPeople += (+k.dPeople||0);  dCsat += (+k.dCsat||0);
+      let cmImpact=0, bpmCum=0, roundsDone=0;
+      const pts={cmq:0,risk:0,people:0,csat:0};
+      for(let n=1;n<=ROUNDS;n++){
+        const t=tierSnap['r'+n] && tierSnap['r'+n][c.id];
+        if(t && t.final){
+          cmImpact += deltaCmRonde('r'+n, t.cmq);
+          bpmCum   += bpmRonde(t);
+          pts.cmq+=tierPts(t.cmq); pts.risk+=tierPts(t.risk);
+          pts.people+=tierPts(t.people); pts.csat+=tierPts(t.csat);
           roundsDone++;
         }
       }
-      const bpm={
-        cm:    clamp(c.bpm_awal.contribution_margin + dCm),
-        risk:  clamp(c.bpm_awal.risk + dRisk),
-        people:clamp(c.bpm_awal.people + dPeople),
-        csat:  clamp(c.bpm_awal.customer_satisfaction + dCsat)
-      };
-      let amanah=0;
-      const am = amanahSnap[c.id];
-      if(am){ for(let n=1;n<=rounds;n++){ amanah += (+am['r'+n]||0); } }
-      const bpmSum   = bpm.cm + bpm.risk + bpm.people + bpm.csat;
-      const bpmTotal = bpmSum + amanah;
-      const cmTahunan = c.cm_tahunan_baseline_jt + cmImpact;
-      const rasio = cmTahunan / c.rbb_cm_tahunan_jt;
+      let amanah=0; const am=amanahSnap[c.id];
+      if(am){ for(let n=1;n<=ROUNDS;n++) amanah+=(+am['r'+n]||0); }
+      const bpmTotal=bpmCum+amanah;
+      const cmTahunan=c.cm_fy2025_jt+cmImpact;
+      const rasio=c.rbb_cm_jt?cmTahunan/c.rbb_cm_jt:0;
+      const cmPerFte=c.fte?cmTahunan/c.fte:0;
+      const bpm={cm:pts.cmq,risk:pts.risk,people:pts.people,csat:pts.csat};
       return {
         id:c.id, nama:c.nama, kelas:c.kelas,
-        roundsDone, cmImpact, cmTahunan, deltaCm:cmImpact,
-        baseline:c.cm_tahunan_baseline_jt, rbb:c.rbb_cm_tahunan_jt,
-        rasio, zona:zonaOf(rasio), bpm,
-        amanah, bpmSum, bpmTotal,
-        bpmWeighted:bpmWeighted(bpm),
-        skorKelompok:skorKelompok(cmImpact,bpm)
+        roundsDone, cmImpact, deltaCm:cmImpact, cmTahunan,
+        baseline:c.cm_fy2025_jt, rbb:c.rbb_cm_jt, fte:c.fte,
+        rasio, zona:zonaOf(rasio), cmPerFte,
+        bpm, bpmCum, amanah, bpmSum:bpmCum, bpmTotal,
+        bpmWeighted:bpmCum,
+        skorKelompok:skorKelompok(cmImpact,bpmCum)
       };
     });
   }
-
-  return {cabang, grpToCab, zonaOf, cmTahunan, rasioRBB, deltaCm, deltaCmNorm,
-          bpmWeighted, skorKelompok, tierFinal, indeksPredikat, predikat, cpi,
-          behaviorScore, bpmTo100, l3, deriveAll};
+  return {cabang, grpToCab, zonaOf, tierPts, deltaCmRonde, bpmRonde, bpmWeighted,
+          cmIndex, bpmIndex, skorKelompok, tierFinal, indeksPredikat, predikat, cpi,
+          behaviorScore, bpm100, l3, deriveAll,
+          cmTahunan:function(br,imp){return cabang(br).cm_fy2025_jt+(imp||0);}};
 })();
 
 /* Format rupiah juta ringkas: 1449.5 → "Rp 1.449,5 jt" ; >=1000 jt → "Rp 1,45 M". */
@@ -442,25 +434,16 @@ function requireFB(){
 
 <script>
 (function(){
-const ROUNDS=MASTER.ronde, ZONA=MASTER.model_zona.tingkat;
+const ROUNDS=MASTER.ronde;
 if(!requireFB()){ bindConnState(); return; }
 
-/* rentang bilah CM Tracker dalam rasio vs RBB */
-const BAR_LO=0.60, BAR_HI=1.30;
-function barPos(rasio){
-  const r=Math.max(BAR_LO,Math.min(BAR_HI,rasio));
-  return (r-BAR_LO)/(BAR_HI-BAR_LO)*100;
-}
-const SEG=[
-  {id:'distress',  lo:0.60,hi:0.75,lbl:'Distress'},
-  {id:'recovery',  lo:0.75,hi:0.95,lbl:'Recovery'},
-  {id:'target_spm',lo:0.95,hi:1.10,lbl:'Target SPM'},
-  {id:'outperform',lo:1.10,hi:1.30,lbl:'Outperform'}
-];
+/* Skala poin kumulatif per indikator BPM lintas enam ronde:
+   optimal +10 .. trap -10 per ronde, jadi rentang efektif -60..+60. */
+const INDIK_SCALE=60;
 
 function indHTML(lbl,val){
-  const v=Math.max(-10,Math.min(10,val));
-  const half=Math.abs(v)/10*50;
+  const v=Math.max(-INDIK_SCALE,Math.min(INDIK_SCALE,val||0));
+  const half=Math.abs(v)/INDIK_SCALE*50;
   const fill=v>=0
     ? '<span class="fill pos" style="left:50%;width:'+half+'%"></span>'
     : '<span class="fill neg" style="right:50%;width:'+half+'%"></span>';
@@ -469,37 +452,40 @@ function indHTML(lbl,val){
     +'<div class="ind-bar"><span class="mid"></span>'+fill+'</div></div>';
 }
 
-function cmtBar(rasio){
-  let segs='';
-  SEG.forEach(s=>{
-    const w=(s.hi-s.lo)/(BAR_HI-BAR_LO)*100;
-    segs+='<div class="cmt-seg '+s.id+'" style="width:'+w+'%">'
-      +'<span class="sg-lbl">'+s.lbl+'</span></div>';
-  });
-  return '<div class="cmt-bar">'+segs
-    +'<div class="cmt-rbb" style="left:'+barPos(1.0)+'%"></div>'
-    +'<div class="cmt-mark" style="left:'+barPos(rasio)+'%"></div></div>';
+/* CM Tracker v4 · Delta CM akumulasi sebagai sorotan, CM per Pegawai metrik
+   utama, zona hanya label kualitatif. Persentase rasio RBB tidak ditampilkan. */
+function cmTracker(d,pre){
+  const dcm=pre?0:d.deltaCm;
+  const cls=dcm>0?'pos':(dcm<0?'neg':'zero');
+  const hero=(dcm>0?'+':'')+rpJt(dcm);
+  const z=d.zona;
+  return '<div class="cmt">'
+    +'<div class="cmt4-row">'
+    +'<div class="cmt4-hero"><div class="cmt4-l">&Delta; CM Akumulasi</div>'
+    +'<div class="cmt4-v '+cls+'">'+hero+'</div></div>'
+    +'<span class="zona '+z.id+'">'+z.label+'</span></div>'
+    +'<div class="cmt4-stats">'
+    +'<div class="cmt4-st"><span class="sl">CM Tahunan</span>'
+    +'<span class="sv">'+rpJt(d.cmTahunan)+'</span></div>'
+    +'<div class="cmt4-st"><span class="sl">CM per Pegawai</span>'
+    +'<span class="sv">'+rpJt(d.cmPerFte)+'</span></div>'
+    +'<div class="cmt4-st"><span class="sl">Ronde Selesai</span>'
+    +'<span class="sv">'+(pre?0:d.roundsDone)+' / 6</span></div>'
+    +'</div></div>';
 }
 
 function card(d,rank,pre){
-  const z=d.zona;
-  const dcm=pre?0:d.deltaCm;
   const am=pre?0:(d.amanah||0);
-  const bpmT=pre?(d.bpm.cm+d.bpm.risk+d.bpm.people+d.bpm.csat):d.bpmTotal;
+  const bpmT=pre?0:d.bpmTotal;
   const skor=pre?0:d.skorKelompok;
   return '<div class="bcard'+((!pre&&rank===1)?' lead':'')+'">'
     +'<div class="bcard-top"><span class="rank">'+(pre?'&mdash;':rank)+'</span>'
     +'<div><div class="bname">'+d.nama.replace('KCP ','')+'</div>'
     +'<div class="bkelas">'+d.kelas.replace('KCP Kelas ','')+'</div></div>'
-    +'<div class="bskor"><div class="sv">'+skor.toFixed(2)+'</div>'
+    +'<div class="bskor"><div class="sv">'+skor.toFixed(1)+'</div>'
     +'<div class="sl">Skor Kelompok</div></div></div>'
 
-    +'<div class="cmt"><div class="cmt-head">'
-    +'CM Tahunan <b>'+rpJt(d.cmTahunan)+'</b>'
-    +' &middot; vs RBB <b>'+pct(d.rasio)+'</b>'
-    +' &middot; &Delta;CM <b>'+(dcm>=0?'+':'')+rpJt(dcm)+'</b>'
-    +'<span class="zona '+z.id+'">'+z.label+'</span></div>'
-    +cmtBar(d.rasio)+'</div>'
+    +cmTracker(d,pre)
 
     +'<div class="hats">'
     +'<div class="hat business"><div class="hat-name">Business Hat</div>'
@@ -521,15 +507,16 @@ let tierData={}, amanahData={};
 function render(){
   let rows=FX.deriveAll(tierData,amanahData);
   const pre=rows.every(d=>(d.roundsDone||0)===0);
-  if(!pre){ rows=rows.slice().sort((a,b)=>b.skorKelompok-a.skorKelompok); }
+  if(!pre){ rows=rows.slice().sort((a,b)=>b.skorKelompok-a.skorKelompok
+    || (b.amanah||0)-(a.amanah||0) || b.bpmTotal-a.bpmTotal); }
   const g=document.getElementById('grid');
   g.innerHTML=rows.map((d,i)=>card(d,pre?null:i+1,pre)).join('');
 }
 
 dbRef('/session/currentRound').on('value',s=>{
   const n=s.val()||1;
-  const r=ROUNDS[n-1]||{kode:'—',tema:''};
-  document.getElementById('bdRound').textContent='Ronde '+r.kode+' · '+r.tema;
+  const r=ROUNDS[n-1]||{kode:'\u2014',tema:''};
+  document.getElementById('bdRound').textContent='Ronde '+r.kode+' \u00b7 '+r.tema;
 });
 dbRef('/tier').on('value',s=>{ tierData=s.val()||{}; render(); });
 dbRef('/amanah').on('value',s=>{ amanahData=s.val()||{}; render(); });
